@@ -10,7 +10,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = '/tmp/uploads' if os.environ.get('RAILWAY_ENVIRONMENT') else 'static/uploads'
+# UPLOAD_FOLDER = '/tmp/uploads' if os.environ.get('RAILWAY_ENVIRONMENT') else 'static/uploads'
+UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/')
@@ -72,6 +73,7 @@ def predict():
         
         try:
             actual_class, probability_class, response = predict_img(model_option, llm_option, img_path)
+            logging.debug(f"Prediction result: {actual_class}, {probability_class}, {response}")
         except Exception as e:
             logging.error(f"Prediction error: {e}")
 
