@@ -9,6 +9,7 @@ torch>=1.8.0
 torchvision>=0.9.0
 tqdm>=4.64.0
 psutil 
+PyYAML
 py-cpuinfo 
 pandas>=1.1.4
 seaborn>=0.11.0 
