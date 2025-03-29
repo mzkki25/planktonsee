@@ -70,7 +70,10 @@ def predict():
 
         logging.debug(f"Running prediction on {img_path}")
         
-        actual_class, probability_class, response = predict_img(model_option, llm_option, img_path)
+        try:
+            actual_class, probability_class, response = predict_img(model_option, llm_option, img_path)
+        except Exception as e:
+            logging.error(f"Prediction error: {e}")
 
         with open(f'{UPLOAD_FOLDER}/response.txt', 'w', encoding='utf-8') as f:
             f.write(response)
