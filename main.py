@@ -11,7 +11,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 
-# UPLOAD_FOLDER = '/tmp/uploads' if os.environ.get('RAILWAY_ENVIRONMENT') else 'static/uploads'
 UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
