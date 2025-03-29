@@ -21,4 +21,4 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 EXPOSE 8080
 
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "--workers=4", "--timeout=1200", "-k", "uvicorn.workers.UvicornWorker", "main:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "--workers", "2", "--worker-class", "gevent", "--timeout", "500", "main:app"]
