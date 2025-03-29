@@ -92,11 +92,9 @@ def predict_img(model_option, llm_option, img_path):
     confidences = [float(box.conf) for box in results[0].boxes]
 
     if llm_option == "qwen":
-        # response = clean_text(qwen2(detected_classes))
-        response = "N/A"
+        response = clean_text(qwen2(detected_classes))
     elif llm_option == "deepseek":
-        # response = clean_text(deepseek(detected_classes))
-        response = "N/A"
+        response = clean_text(deepseek(detected_classes))
     else:
         response = "Pilih model LLM yang sesuai."
 

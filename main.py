@@ -72,7 +72,12 @@ def predict():
         logging.debug(f"Running prediction on {img_path}, model: {model_option}, llm: {llm_option}")
         
         try:
-            actual_class, probability_class, response = predict_img(model_option, llm_option, img_path)
+            # actual_class, probability_class, response = predict_img(model_option, llm_option, img_path)
+
+            actual_class = ["Plankton1", "Plankton2"]
+            probability_class = [0.95, 0.85]
+            response = "Plankton detected with high confidence."
+
             logging.debug(f"Prediction result: {actual_class}, {probability_class}, {response}")
         except Exception as e:
             logging.error(f"Prediction error: {e}")
