@@ -68,8 +68,11 @@ def predict():
 @app.route('/result')
 def result():
     img_path = request.args.get('img_path')
-    actual_class = request.args.getlist('actual_class')[0].split(",")
-    probability_class = request.args.getlist('probability_class')[0].split(",")
+    actual_class = request.args.getlist('actual_class')
+    probability_class = request.args.getlist('probability_class')
+    
+    # actual_class = request.args.getlist('actual_class')[0].split(",")
+    # probability_class = request.args.getlist('probability_class')[0].split(",")
 
     actual_classes = actual_class if len(actual_class) > 0 else ["Tidak terdeteksi"]
     probability_classes = probability_class if len(probability_class) > 0 else [99999]
