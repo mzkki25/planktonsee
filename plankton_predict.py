@@ -11,9 +11,6 @@ from gradio_client import Client
 UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-def clean_text(text):
-    return text
-
 def qwen2(message):
     client = Client("Qwen/Qwen2-57b-a14b-instruct-demo")
     
