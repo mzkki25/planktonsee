@@ -68,7 +68,7 @@ def predict():
             logging.error(f"Image path not found: {img_path}")
             return jsonify({"error": "Image file not found"}), 400
 
-        logging.debug(f"Running prediction on {img_path}")
+        logging.debug(f"Running prediction on {img_path}, model: {model_option}, llm: {llm_option}")
         
         try:
             actual_class, probability_class, response = predict_img(model_option, llm_option, img_path)
