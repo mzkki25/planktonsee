@@ -4,7 +4,14 @@ import gunicorn
 from flask import Flask, request, jsonify, render_template
 from plankton_predict import predict_img
 
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+
 app = Flask(__name__)
+
+UPLOAD_FOLDER = '/tmp/uploads' if os.environ.get('RAILWAY_ENVIRONMENT') else 'static/uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/')
 def index():
@@ -36,7 +43,8 @@ def upload_image():
         }), 400
         
     if file:
-        img_path = os.path.join('static/uploads', file.filename)
+        # img_path = os.path.join('static/uploads', file.filename)
+        img_path = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(img_path)
         return jsonify({
             "img_path": img_path
@@ -48,31 +56,45 @@ def upload_image():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    data = request.json
-    img_path = data['img_path']
-    model_option = data['model_option']
-    llm_option = data['llm_option']
-    
-    actual_class, probability_class, response = predict_img(model_option, llm_option, img_path)
+    logging.debug(f"Request received: {request.json}")
 
-    with open('static/uploads/response.txt', 'w', encoding='utf-8') as f:
-        f.write(response)
+    try:
+        data = request.json
+        # img_path = data['img_path']
+        # model_option = data['model_option']
+        # llm_option = data['llm_option']
+
+        img_path = data.get('img_path', None)
+        model_option = data.get('model_option', None)
+        llm_option = data.get('llm_option', None)
+
+        if not img_path or not os.path.exists(img_path):
+            logging.error(f"Image path not found: {img_path}")
+            return jsonify({"error": "Image file not found"}), 400
+
+        logging.debug(f"Running prediction on {img_path}")
+        
+        actual_class, probability_class, response = predict_img(model_option, llm_option, img_path)
+
+        with open('static/uploads/response.txt', 'w', encoding='utf-8') as f:
+            f.write(response)
+        
+        return jsonify({
+            "img_path": img_path,
+            "actual_class": actual_class,
+            "probability_class": probability_class,
+            "response": response
+        }), 200
     
-    return jsonify({
-        "img_path": img_path,
-        "actual_class": actual_class,
-        "probability_class": probability_class,
-        "response": response
-    }), 200
+    except Exception as e:
+        logging.error(f"Error during prediction: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/result')
 def result():
     img_path = request.args.get('img_path')
-    actual_class = request.args.getlist('actual_class')
-    probability_class = request.args.getlist('probability_class')
-    
-    # actual_class = request.args.getlist('actual_class')[0].split(",")
-    # probability_class = request.args.getlist('probability_class')[0].split(",")
+    actual_class = request.args.getlist('actual_class')[0].split(",")
+    probability_class = request.args.getlist('probability_class')[0].split(",")
 
     actual_classes = actual_class if len(actual_class) > 0 else ["Tidak terdeteksi"]
     probability_classes = probability_class if len(probability_class) > 0 else [99999]

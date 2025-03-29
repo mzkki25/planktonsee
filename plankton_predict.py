@@ -1,9 +1,16 @@
 import torch    
 import cv2
 import warnings
+import os
+import logging
 
 from ultralytics import YOLO
 from gradio_client import Client
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
+UPLOAD_FOLDER = '/tmp/uploads' if os.environ.get('RAILWAY_ENVIRONMENT') else 'static/uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 warnings.filterwarnings('ignore')
 warnings.simplefilter('ignore')
@@ -75,8 +82,12 @@ def predict_img(model_option, llm_option, img_path):
 
     results = model(img)
 
+    # cv2.imwrite(
+    #     filename="static/uploads/detect_img.jpg", 
+    #     img=cv2.cvtColor(results[0].plot(), cv2.COLOR_BGR2RGB)
+    # )
     cv2.imwrite(
-        filename="static/uploads/detect_img.jpg", 
+        filename=f"{UPLOAD_FOLDER}/detect_img.jpg", 
         img=cv2.cvtColor(results[0].plot(), cv2.COLOR_BGR2RGB)
     )
 
