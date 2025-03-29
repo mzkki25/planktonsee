@@ -76,33 +76,30 @@ def predict_img(model_option, llm_option, img_path):
     img = cv2.imread(img_path)
     img = cv2.resize(img, (864, 576))
 
-    # results = model(img)
+    results = model(img)
 
-    # logging.debug(f"Detected {len(results[0].boxes)} objects")
-    # logging.debug(f"Detected classes: {results[0].boxes.cls}")
+    logging.debug(f"Detected {len(results[0].boxes)} objects")
+    logging.debug(f"Detected classes: {results[0].boxes.cls}")
 
     cv2.imwrite(
         filename=f"{UPLOAD_FOLDER}/detect_img.jpg", 
-        # img=cv2.cvtColor(results[0].plot(), cv2.COLOR_BGR2RGB)
-        img=cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img=cv2.cvtColor(results[0].plot(), cv2.COLOR_BGR2RGB)
     )
 
     logging.debug(f"Image saved to {UPLOAD_FOLDER}/detect_img.jpg")
 
-    # detected_classes = [model.names[int(box.cls)] for box in results[0].boxes]
-    # confidences = [float(box.conf) for box in results[0].boxes]
+    detected_classes = [model.names[int(box.cls)] for box in results[0].boxes]
+    confidences = [float(box.conf) for box in results[0].boxes]
 
-    # if llm_option == "qwen":
-    #     response = clean_text(qwen2(detected_classes))
-    # elif llm_option == "deepseek":
-    #     response = clean_text(deepseek(detected_classes))
-    # else:
-    #     response = "Pilih model LLM yang sesuai."
+    if llm_option == "qwen":
+        # response = qwen2(detected_classes)
+        response = "N/A"
+    elif llm_option == "deepseek":
+        # response = deepseek(detected_classes)
+        response = "N/A"
+    else:
+        response = "Pilih model LLM yang sesuai."
 
-    # logging.debug(f"Detected classes: {detected_classes}")
-
-    detected_classes = ["Plankton1", "Plankton2"]
-    confidences = [0.95, 0.85]
-    response = "Plankton terdeteksi dengan kepercayaan tinggi."
+    logging.debug(f"Detected classes: {detected_classes}")
 
     return detected_classes, confidences, response

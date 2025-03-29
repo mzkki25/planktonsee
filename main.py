@@ -1,5 +1,7 @@
 import os
 import gunicorn
+import concurrent.futures
+import time
 
 from flask import Flask, request, jsonify, render_template
 from plankton_predict import predict_img
@@ -9,6 +11,8 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
+
+executor = concurrent.futures.ThreadPoolExecutor(max_workers=2) 
 
 # UPLOAD_FOLDER = '/tmp/uploads' if os.environ.get('RAILWAY_ENVIRONMENT') else 'static/uploads'
 UPLOAD_FOLDER = 'static/uploads'
@@ -53,7 +57,7 @@ def upload_image():
         return jsonify({
             "error": "File extension not allowed"
         }), 400
-
+    
 @app.route('/predict', methods=['POST'])
 def predict():
     logging.debug(f"Request received: {request.json}")
@@ -73,10 +77,6 @@ def predict():
         
         try:
             actual_class, probability_class, response = predict_img(model_option, llm_option, img_path)
-
-            # actual_class = ["Plankton1", "Plankton2"]
-            # probability_class = [0.95, 0.85]
-            # response = "Plankton detected with high confidence."
 
             logging.debug(f"Prediction result: {actual_class}, {probability_class}, {response}")
         except Exception as e:
@@ -125,7 +125,5 @@ def result():
         return render_template(template_name_or_list='opening.html')
 
 if __name__ == "__main__":
-    # app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
-    # app.run(debug=False)
     port = int(os.environ.get("PORT", 8080)) 
     app.run(host="0.0.0.0", port=port, debug=True)
