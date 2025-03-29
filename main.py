@@ -43,7 +43,6 @@ def upload_image():
         }), 400
         
     if file:
-        # img_path = os.path.join('static/uploads', file.filename)
         img_path = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(img_path)
         return jsonify({
@@ -60,9 +59,6 @@ def predict():
 
     try:
         data = request.json
-        # img_path = data['img_path']
-        # model_option = data['model_option']
-        # llm_option = data['llm_option']
 
         img_path = data.get('img_path', None)
         model_option = data.get('model_option', None)
@@ -76,7 +72,7 @@ def predict():
         
         actual_class, probability_class, response = predict_img(model_option, llm_option, img_path)
 
-        with open('static/uploads/response.txt', 'w', encoding='utf-8') as f:
+        with open(f'{UPLOAD_FOLDER}/response.txt', 'w', encoding='utf-8') as f:
             f.write(response)
         
         return jsonify({
@@ -99,10 +95,10 @@ def result():
     actual_classes = actual_class if len(actual_class) > 0 else ["Tidak terdeteksi"]
     probability_classes = probability_class if len(probability_class) > 0 else [99999]
 
-    with open('static/uploads/response.txt', 'r', encoding='utf-8') as f:
+    with open(f'{UPLOAD_FOLDER}/response.txt', 'r', encoding='utf-8') as f:
         response = f.read()
 
-    output_path = os.path.join('static/uploads', "detect_img.jpg")
+    output_path = os.path.join(f'{UPLOAD_FOLDER}', "detect_img.jpg")
     predictions = list(zip(
         [(" ".join(actual_class.split("_"))).title() for actual_class in actual_classes], 
         [f'{float(prob):.6f}' for prob in probability_classes]

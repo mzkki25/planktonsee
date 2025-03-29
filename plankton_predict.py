@@ -86,10 +86,16 @@ def predict_img(model_option, llm_option, img_path):
     #     filename="static/uploads/detect_img.jpg", 
     #     img=cv2.cvtColor(results[0].plot(), cv2.COLOR_BGR2RGB)
     # )
+
+    logging.debug(f"Detected {len(results[0].boxes)} objects")
+    logging.debug(f"Detected classes: {results[0].boxes.cls}")
+
     cv2.imwrite(
         filename=f"{UPLOAD_FOLDER}/detect_img.jpg", 
         img=cv2.cvtColor(results[0].plot(), cv2.COLOR_BGR2RGB)
     )
+
+    logging.debug(f"Image saved to {UPLOAD_FOLDER}/detect_img.jpg")
 
     detected_classes = [model.names[int(box.cls)] for box in results[0].boxes]
     confidences = [float(box.conf) for box in results[0].boxes]
@@ -100,5 +106,7 @@ def predict_img(model_option, llm_option, img_path):
         response = clean_text(deepseek(detected_classes))
     else:
         response = "Pilih model LLM yang sesuai."
+
+    logging.debug(f"Detected classes: {detected_classes}")
 
     return detected_classes, confidences, response
