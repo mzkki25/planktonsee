@@ -132,7 +132,7 @@ $(document).ready(function() {
                     $loading.hide();
                     $transparant.hide();
                     
-                    window.location.href = `/result?img_path=${data.img_path}&actual_class=${data.actual_class}&probability_class=${data.probability_class}&response=${data.response}`;
+                    window.location.href = `/result?img_path=${data.img_path}&actual_class=${data.actual_class}&probability_class=${data.probability_class}`;
                 }
             },
             error: function(xhr, status, error) {

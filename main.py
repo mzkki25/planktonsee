@@ -1,13 +1,7 @@
 import os
-import gunicorn
-import time
 
 from flask import Flask, request, jsonify, render_template
 from plankton_predict import predict_img
-
-import logging
-
-logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 
@@ -53,11 +47,9 @@ def upload_image():
         return jsonify({
             "error": "File extension not allowed"
         }), 400
-    
+
 @app.route('/predict', methods=['POST'])
 def predict():
-    logging.debug(f"Request received: {request.json}")
-
     try:
         data = request.json
 
@@ -66,20 +58,12 @@ def predict():
         llm_option = data.get('llm_option', None)
 
         if not img_path or not os.path.exists(img_path):
-            logging.error(f"Image path not found: {img_path}")
             return jsonify({"error": "Image file not found"}), 400
 
-        logging.debug(f"Running prediction on {img_path}, model: {model_option}, llm: {llm_option}")
-        
-        try:
-            actual_class, probability_class, response = predict_img(model_option, llm_option, img_path)
+        actual_class, probability_class = predict_img(model_option, llm_option, img_path)
 
-            logging.debug(f"Prediction result: {actual_class}, {probability_class}, {response}")
-        except Exception as e:
-            logging.error(f"Prediction error: {e}")
-
-        with open(f'{UPLOAD_FOLDER}/response.txt', 'w', encoding='utf-8') as f:
-            f.write(response)
+        with open(f'{UPLOAD_FOLDER}/response.txt', 'r', encoding='utf-8') as f:
+            response = f.read()
         
         return jsonify({
             "img_path": img_path,
@@ -89,7 +73,6 @@ def predict():
         }), 200
     
     except Exception as e:
-        logging.error(f"Error during prediction: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/result')
@@ -119,7 +102,8 @@ def result():
         )
     else:
         return render_template(template_name_or_list='opening.html')
-
+    
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080)) 
-    app.run(host="0.0.0.0", port=port, debug=False)
+    # port = int(os.environ.get("PORT", 8080)) 
+    # app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(debug=True)
