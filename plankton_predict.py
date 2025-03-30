@@ -8,6 +8,9 @@ import tempfile
 import os
 import uuid
 import google.generativeai as genai
+import dotenv
+
+dotenv.load_dotenv()
 
 from firebase_admin import credentials, firestore, storage
 from ultralytics import YOLO
@@ -23,24 +26,25 @@ def upload_image_to_firebase(image_path):
     try:
         logger.info("Connecting to Firestore...")
 
-        cred = credentials.Certificate("credential/all_credential.json")
+        cred = credentials.Certificate("credential/credential.json")
         firebase_admin.initialize_app(cred) if not firebase_admin._apps else firebase_admin.get_app()
         db = firestore.client()
         bucket = storage.bucket(name='planktosee-temp-file')
-        bucket.make_public()
 
         logger.info("Connected to Firestore successfully.")
+        blob = bucket.blob('images/' + os.path.basename(image_path))
+        blob.upload_from_filename(image_path)
+        blob.make_public()
+
+        return blob.public_url
+
     except Exception as e:
         logger.error(f"Error connecting to Firestore: {e}")
-
-    blob = bucket.blob('images/' + os.path.basename(image_path))
-    blob.upload_from_filename(image_path)
-    blob.make_public()
-    return blob.public_url
+        return None
 
 def gemini(message):
     try:
-        genai.configure(api_key="")
+        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
         chatbot = genai.GenerativeModel("gemini-1.5-flash-002")
         system = f"""
@@ -149,7 +153,10 @@ def predict_img(model_option, llm_option, img_path):
         temp_filename = uuid.uuid4().hex + ".jpg"
         cv2.imwrite(temp_filename, img_result)
     
-    public_url = upload_image_to_firebase(temp_filename)
+    try:
+        public_url = upload_image_to_firebase(temp_filename)
+    except Exception as e:
+        logger.error(f"Error uploading image to Firebase: {e}")
 
     os.remove(temp_filename)
 
