@@ -21,11 +21,14 @@ logger = logging.getLogger(__name__)
 
 def upload_image_to_firebase(image_path):
     try:
+        logger.info("Connecting to Firestore...")
+
         cred = credentials.Certificate("credential/all_credential.json")
         firebase_admin.initialize_app(cred) if not firebase_admin._apps else firebase_admin.get_app()
         db = firestore.client()
         bucket = storage.bucket(name='planktosee-temp-file')
         bucket.make_public()
+
         logger.info("Connected to Firestore successfully.")
     except Exception as e:
         logger.error(f"Error connecting to Firestore: {e}")
@@ -92,7 +95,7 @@ def qwen2(message):
         return result[1][0][1]
 
     except Exception as e:
-        logger.error(f"Error di Gemini: {e}")
+        logger.error(f"Error di Qwen2: {e}")
         return "Terjadi kesalahan saat menghubungi Qwen2 API."
     
 def deepseek(message):
@@ -124,7 +127,7 @@ def deepseek(message):
         return result
 
     except Exception as e:
-        logger.error(f"Error di Gemini: {e}")
+        logger.error(f"Error di DeepSeek: {e}")
         return "Terjadi kesalahan saat menghubungi DeepSeek"
 
 def predict_img(model_option, llm_option, img_path):

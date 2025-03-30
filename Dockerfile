@@ -19,6 +19,6 @@ COPY . /app/
 
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-EXPOSE 8080
+EXPOSE 8000
 
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "--workers", "2", "--worker-class", "gevent", "--timeout", "500", "main:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "--workers", "2", "--worker-class", "gevent", "--timeout", "500", "main:app"]
