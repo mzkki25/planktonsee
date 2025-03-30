@@ -28,7 +28,7 @@ PlanktonSee adalah aplikasi berbasis web yang menggunakan model machine learning
 
 ### 1. Clone Repository
 ```sh
-git clone https://github.com/username/repository.git
+git clone https://github.com/mzkki25/planktonsee.git
 cd repository
 ```
 
@@ -67,10 +67,4 @@ Aplikasi akan berjalan di `http://127.0.0.1:5000/`
 
 ## Deployment
 Aplikasi ini dapat dideploy ke Google Cloud Run atau Railway dengan konfigurasi yang telah disediakan dalam `Dockerfile` dan `railway.json`. Pastikan untuk mengganti kredensial dan konfigurasi yang sesuai sebelum melakukan deployment.
-
-## Kontribusi
-Jika ingin berkontribusi, silakan buat pull request atau buka issue di repository ini.
-
-## Lisensi
-Proyek ini dilisensikan di bawah MIT License.
 
